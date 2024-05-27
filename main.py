@@ -5,8 +5,9 @@ import asyncio
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.filters.state import StateFilter
+from aiogram import F
 from UserStates import UserStates
-from KeyBoard_helper import get_keyboard
+from KeyBoard_helper import keyboards
 
 from to import TOKEN
 
@@ -16,13 +17,17 @@ dp = Dispatcher(storage=storage)
 
 @dp.message(Command("start"))
 async def start(message: types.Message, state: FSMContext):
-    kb = get_keyboard(["/test"])
+    kb = keyboards[UserStates.BASE]
     await message.answer("Привет! Я пари-бот", reply_markup=kb)
     await state.set_state(UserStates.BASE)
 
-@dp.message(Command("test"), StateFilter(UserStates.BASE))
+@dp.message(F.text == "Мои пари", StateFilter(UserStates.BASE))
 async def start(message: types.Message):
-    await message.answer("Ты в состоянии BASE")
+    await message.answer("Твои пари:")
+
+@dp.message(F.text == "Создать пари", StateFilter(UserStates.BASE))
+async def start(message: types.Message):
+    await message.answer("зайди позже")
 
 async def main():
     await dp.start_polling(bot)
